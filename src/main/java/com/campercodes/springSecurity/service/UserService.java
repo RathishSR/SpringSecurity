@@ -12,6 +12,8 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.nio.file.attribute.UserPrincipalNotFoundException;
+
 @Service
 @Slf4j
 public class UserService implements UserDetailsService {
@@ -41,4 +43,13 @@ public class UserService implements UserDetailsService {
         //#TODO - return JWT
         return new AuthenticationResponse();
     }
+
+    public AuthenticationResponse authenticateUser(UserDto user) {
+        User entityUser = userRepository
+                .findByUsername(user.getUsername())
+                .orElseThrow(() -> new UsernameNotFoundException("Invalid User"));
+        if (passwordEncoder.matches(user.getPassword(), entityUser.getPassword())) {
+            return new AuthenticationResponse("Successful");
+        }
+        return new AuthenticationResponse("Failure");    }
 }

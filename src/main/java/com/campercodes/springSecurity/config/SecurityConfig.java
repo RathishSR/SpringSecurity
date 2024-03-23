@@ -38,7 +38,7 @@ public class SecurityConfig {
                     auth.requestMatchers("/user/**").hasAuthority(Role.USER.name());
                     auth.anyRequest().authenticated();
                 }).userDetailsService(userDetailsService())
-                .formLogin(Customizer.withDefaults());
+                .formLogin(AbstractHttpConfigurer::disable);
                 //#TODO add JWT filter
         return http.build();
     }
