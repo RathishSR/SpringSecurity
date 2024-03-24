@@ -3,10 +3,12 @@ package com.campercodes.springSecurity.controller;
 import com.campercodes.springSecurity.model.AuthenticationResponse;
 import com.campercodes.springSecurity.model.UserDto;
 import com.campercodes.springSecurity.service.AuthenticationService;
+import io.jsonwebtoken.ExpiredJwtException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -46,7 +48,12 @@ public class AuthenticationController {
         try {
             response = authenticationService.authenticateUser(request);
         } catch (BadCredentialsException | UsernameNotFoundException e) {
-            return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+            return new ResponseEntity<>(new AuthenticationResponse("Invalid username or credentials"),
+                    HttpStatus.UNAUTHORIZED);
+        } catch (ExpiredJwtException e) {
+            return new ResponseEntity<>(new AuthenticationResponse(
+                    "Token expired, please authenticate again for new token"),
+                    HttpStatus.UNAUTHORIZED);
         }
         return ResponseEntity.ok(response);
     }

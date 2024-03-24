@@ -11,6 +11,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 
 import java.util.Collection;
 import java.util.List;
+import java.util.Set;
 
 @Entity
 @Table(name = "user", uniqueConstraints =
@@ -26,13 +27,15 @@ public class User implements UserDetails {
     @Column(name = "id")
     private String id;
 
-
     private String username;
     private String password;
 
     @Enumerated(EnumType.STRING)
     private Role role;
     private boolean isEnabled;
+
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private Set<Token> tokens;
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
