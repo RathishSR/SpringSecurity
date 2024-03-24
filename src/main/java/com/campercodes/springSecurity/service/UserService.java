@@ -17,28 +17,10 @@ import org.springframework.stereotype.Service;
 public class UserService implements UserDetailsService {
     @Autowired
     private UserRepository userRepository;
-    @Autowired
-    private PasswordEncoder passwordEncoder;
-
     @Override
     public User loadUserByUsername(String username) {
-        return authenticateUser(username);
-    }
-    public User authenticateUser(String username) {
         return userRepository
                 .findByUsername(username)
                 .orElseThrow(() -> new UsernameNotFoundException("Invalid username"));
-    }
-
-    public AuthenticationResponse registerUser(UserDto userRequest) {
-        User user = new User();
-        user.setUsername(userRequest.getUsername());
-        user.setPassword(passwordEncoder.encode(userRequest.getPassword()));
-        user.setRole(Role.valueOf(userRequest.getRole()));
-        user.setEnabled(true);
-        userRepository.save(user);
-        log.info("User created: " + userRepository.findByUsername(userRequest.getUsername()));
-        //#TODO - return JWT
-        return new AuthenticationResponse();
     }
 }
